@@ -1,0 +1,28 @@
+<div
+  *ngIf="!(isUserLogged$ | async); else lobby"
+  [class]="'inputs-wrapper'"
+>
+  <input [type]="'text'" [formControl]="name" />
+
+  <button (click)="login()">
+    Logar
+  </button>
+</div>
+
+<ng-template #lobby>
+  <div
+    *ngIf="isDonoDaSala$ | async"
+    [class]="'tag'"
+  >
+    <h2>Parabéns, você é o dono da sala! 🎉</h2>
+    <button>Iniciar</button>
+  </div>
+  <h1>
+    Lobby de Jogadores:
+  </h1>
+  <div *ngFor="let player of (players$ | async)">
+    <h3>
+      {{ player.meuNome}}
+    </h3>
+  </div>
+</ng-template>

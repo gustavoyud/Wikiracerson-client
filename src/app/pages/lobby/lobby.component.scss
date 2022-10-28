@@ -1,0 +1,45 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.inputs-wrapper {
+  display: flex;
+  gap: 5px;
+}
+
+.tag {
+  background-color: var(--lsds-text);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h2 {
+    color: var(--lsds-white);
+    font-size: 14px;
+  }
+
+}
+
+button {
+  color: var(--lsds-white);
+  font-family: "Roboto", sans-serif;
+  border: none;
+  background: var(--lsds-action);
+  border-radius: 4px;
+  padding: 8px 22px;
+}
+
+h1 {
+  color: var(--lsds-primary);
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Roboto", sans-serif;
+  margin: 0px;
+}
