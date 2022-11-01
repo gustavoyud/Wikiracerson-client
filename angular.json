@@ -11,12 +11,19 @@
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss",
+          "standalone": true,
+          "changeDetection": "OnPush",
+          "displayBlock": true,
+          "inlineStyle": true,
+          "inlineTemplate": true,
+          "prefix": "lsds",
           "skipTests": true
         },
         "@schematics/angular:class": {
           "skipTests": true
         },
         "@schematics/angular:directive": {
+          "standalone": true,
           "skipTests": true
         },
         "@schematics/angular:guard": {
@@ -26,6 +33,7 @@
           "skipTests": true
         },
         "@schematics/angular:pipe": {
+          "standalone": true,
           "skipTests": true
         },
         "@schematics/angular:resolver": {
@@ -51,13 +59,8 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.scss"
-            ],
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.scss"],
             "scripts": []
           },
           "configurations": {
