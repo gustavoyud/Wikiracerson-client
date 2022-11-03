@@ -1,5 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { LobbyService } from 'src/app/shared/services/lobby.service';
 
@@ -10,6 +11,8 @@ interface Player {
 }
 
 @Component({
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   selector: 'lsds-lobby',
   templateUrl: './lobby.component.html',
   styleUrls: ['./lobby.component.scss'],
