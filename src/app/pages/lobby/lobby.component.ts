@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { BehaviorSubject } from 'rxjs';
+import { Router } from '@angular/router';
+import { tap } from 'rxjs';
 import { LobbyService } from 'src/app/shared/services/lobby.service';
 
 interface Player {
@@ -12,30 +12,24 @@ interface Player {
 
 @Component({
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule],
   selector: 'lsds-lobby',
   templateUrl: './lobby.component.html',
   styleUrls: ['./lobby.component.scss'],
 })
 export class LobbyComponent implements OnInit {
-  public name = new FormControl('');
-
-  public players$ = this.lobby.getPlayers();
+  public players$ = this.lobby.getPlayers().pipe(tap(console.log));
 
   public isDonoDaSala$ = this.lobby.isDonoDaSala();
 
-  public isUserLogged$ = new BehaviorSubject(false);
+  constructor(private lobby: LobbyService, private route: Router) {}
 
-  constructor(private lobby: LobbyService) {}
-
-  public ngOnInit(): void {}
-
-  public login(): void {
-    this.lobby.login({
-      meuNome: this.name.value,
-      id: Math.floor(Math.random() * 1000),
-    });
-    this.lobby.emitPlayers();
-    this.isUserLogged$.next(true);
+  public ngOnInit(): void {
+    if (localStorage.getItem('user')) {
+      this.lobby.login(JSON.parse(localStorage.getItem('user')));
+      this.lobby.emitPlayers();
+    } else {
+      this.route.navigate(['auth']);
+    }
   }
 }

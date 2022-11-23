@@ -4,7 +4,11 @@ export const APP_ROUTES: Route[] = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'lobby',
+    redirectTo: 'auth',
+  },
+  {
+    path: 'auth',
+    loadChildren: () => import('./login/login.routes').then(mod => mod.AUTH_ROUTES)
   },
   {
     path: 'lobby',

@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  apiUrl: "http://localhost:3000"
+  localApiUrl: "http://localhost:3000",
+  apiUrl: "https://wikiracerson.herokuapp.com"
 };
 
 /*
