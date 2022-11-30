@@ -1,27 +1,46 @@
-<div
-  *ngIf="isDonoDaSala$ | async"
-  [class]="'tag'"
->
-  <h2>Parabéns, você é o dono da sala! 🎉</h2>
-  <button (click)="start()">Iniciar</button>
-</div>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Jogadores conectados:</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div *ngFor="let player of players$ | async">
+      <p>{{ player.meuNome }} <span *ngIf="player.isDonoDaSala">🥷</span></p>
+      <h5 *ngFor="let history of player.history; first as first">
+        <span *ngIf="!first">-></span> {{ history }}
+      </h5>
+    </div>
+    <mat-divider
+      *ngIf="(isDonoDaSala$ | async) && !(currentArticle$ | async)"
+    ></mat-divider>
+  </mat-card-content>
+  <mat-card-actions
+    align="end"
+    *ngIf="(isDonoDaSala$ | async) && !(currentArticle$ | async)"
+  >
+    <button mat-button color="primary" (click)="start()">Começar o jogo</button>
+  </mat-card-actions>
+</mat-card>
 
-<ng-container *ngIf="!((articles$ |async)?.start?.title); else game">
-  <h1>
-    Lobby de Jogadores:
-  </h1>
-  <div *ngFor="let player of (players$ | async)">
-    <h3>
-      {{ player.meuNome}} <span *ngIf="player.isDonoDaSala">🥷</span>
-    </h3>
-  </div>
-</ng-container>
-
-<ng-template #game>
-  <h2>
-    Artigo que inicia: {{ (articles$ |async)?.start?.title }}
-  </h2>
-  <h3>
-    Você deve chegar nesse artigo: {{ (articles$ |async)?.end?.title }}
-  </h3>
-</ng-template>
+<mat-card *ngIf="(articles$ | async)?.start?.title">
+  <mat-card-header>
+    <mat-card-subtitle>Você está em: </mat-card-subtitle>
+    <mat-card-title>{{ currentArticle$ | async }}</mat-card-title>
+    <mat-card-subtitle>
+      Você deve chegar nesse artigo: <b>{{ (articles$ | async)?.end?.title }}</b>
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-selection-list [multiple]="false">
+      <mat-list-option
+        *ngFor="let item of listOfArticles$ | async"
+        [value]="item"
+        (click)="searchTheGuys(item.link)"
+      >
+        {{ item.label }}
+      </mat-list-option>
+    </mat-selection-list>
+  </mat-card-content>
+  <mat-card-footer>
+    <mat-progress-bar *ngIf="loading$ | async" mode="indeterminate"></mat-progress-bar>
+  </mat-card-footer>
+</mat-card>

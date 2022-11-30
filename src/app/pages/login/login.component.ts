@@ -1,37 +1,37 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { LobbyService } from 'src/app/shared/services/lobby.service';
 
 @Component({
   selector: 'lsds-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
   template: `
-    <div [class]="'inputs-wrapper'">
-      <input [type]="'text'" [formControl]="name" />
-      <button (click)="login()">Logar</button>
-    </div>
+    <mat-form-field appearance="outline">
+      <mat-label>Nome</mat-label>
+      <input matInput [type]="'text'" [formControl]="name" />
+    </mat-form-field>
+    <button (click)="login()" mat-raised-button color="primary">Logar</button>
   `,
   styles: [
     `
       :host {
-        display: block;
-      }
-
-      .inputs-wrapper {
         display: flex;
-        gap: 5px;
-      }
-
-      button {
-        color: var(--lsds-white);
-        font-family: 'Roboto', sans-serif;
-        border: none;
-        background: var(--lsds-action);
-        border-radius: 4px;
-        padding: 8px 22px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
       }
     `,
   ],
