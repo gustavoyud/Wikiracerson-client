@@ -40,4 +40,8 @@ export class LobbyService {
   public getArticles(): Observable<any> {
     return this.ws.listen('gameHasStarted');
   }
+
+  public updateHistory(history: any): void {
+    this.ws.emit('updateHistory', history);
+  }
 }
