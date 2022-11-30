@@ -32,4 +32,12 @@ export class LobbyService {
   public isDonoDaSala(): Observable<any> {
     return this.ws.listen('isDonoDaSala');
   }
+
+  public startGame(articles: any): void {
+    this.ws.emit('gameStarted', articles);
+  }
+
+  public getArticles(): Observable<any> {
+    return this.ws.listen('gameHasStarted');
+  }
 }

@@ -3,13 +3,25 @@
   [class]="'tag'"
 >
   <h2>Parabéns, você é o dono da sala! 🎉</h2>
-  <button>Iniciar</button>
+  <button (click)="start()">Iniciar</button>
 </div>
-<h1>
-  Lobby de Jogadores:
-</h1>
-<div *ngFor="let player of (players$ | async)">
+
+<ng-container *ngIf="!((articles$ |async)?.start?.title); else game">
+  <h1>
+    Lobby de Jogadores:
+  </h1>
+  <div *ngFor="let player of (players$ | async)">
+    <h3>
+      {{ player.meuNome}} <span *ngIf="player.isDonoDaSala">🥷</span>
+    </h3>
+  </div>
+</ng-container>
+
+<ng-template #game>
+  <h2>
+    Artigo que inicia: {{ (articles$ |async)?.start?.title }}
+  </h2>
   <h3>
-    {{ player.meuNome}} <span *ngIf="player.isDonoDaSala">🥷</span>
+    Você deve chegar nesse artigo: {{ (articles$ |async)?.end?.title }}
   </h3>
-</div>
+</ng-template>
