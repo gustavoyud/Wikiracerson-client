@@ -39,7 +39,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   public isDonoDaSala$ = this.lobby.isDonoDaSala();
 
-  public gameStarted$ = new BehaviorSubject(false);
+  public gameHasFinished$ = new BehaviorSubject(false);
 
   public articles$ = new BehaviorSubject<any>({});
 
@@ -67,18 +67,34 @@ export class LobbyComponent implements OnInit, OnDestroy {
     if (localStorage.getItem('user')) {
       this.lobby.login(JSON.parse(localStorage.getItem('user')));
       this.lobby.emitPlayers();
-
-      this.lobby
-        .getArticles()
-        .pipe(takeUntil(this.destroyController$))
-        .subscribe((articles) => {
-          this.snackbar.open('O jogo começou! 🎮', '🏃‍♂️', { duration: 2000 });
-          this.articles$.next(articles);
-          this.searchTheGuys(articles.start.title);
-        });
+      this.listenArticles();
+      this.listenToGameFinished();
     } else {
       this.route.navigate(['auth']);
     }
+  }
+
+  private listenArticles() {
+    this.lobby
+      .getArticles()
+      .pipe(takeUntil(this.destroyController$))
+      .subscribe((articles) => {
+        this.snackbar.open('O jogo começou! 🎮', '🏃‍♂️', { duration: 2000 });
+        this.articles$.next(articles);
+        this.searchTheGuys(articles.start.title);
+      });
+  }
+
+  private listenToGameFinished() {
+    this.lobby
+      .gameFinished()
+      .pipe(takeUntil(this.destroyController$))
+      .subscribe((value) => {
+        this.snackbar.open(`${value.meuNome} é o vencedor!`, 'OK', {
+          duration: 2000,
+        });
+        this.gameHasFinished$.next(true);
+      });
   }
 
   public start(): void {
@@ -105,6 +121,9 @@ export class LobbyComponent implements OnInit, OnDestroy {
         finalize(() => this.loading$.next(false))
       )
       .subscribe(({ body }) => {
+        if (body?.pageId === this.articles$.value.end?.id) {
+          this.lobby.hasWinner();
+        }
         this.listOfArticles$.next(body?.links);
       });
   }
