@@ -44,4 +44,12 @@ export class LobbyService {
   public updateHistory(history: any): void {
     this.ws.emit('updateHistory', history);
   }
+
+  public gameFinished(): Observable<any> {
+    return this.ws.listen('gameHasFinished');
+  }
+
+  public hasWinner(): void {
+    this.ws.emit('hasWinner');
+  }
 }
