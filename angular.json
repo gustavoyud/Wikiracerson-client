@@ -113,6 +113,9 @@
           "options": {
             "browserTarget": "little-sena:build"
           }
+        },
+        "deploy": {
+          "builder": "angular-cli-ghpages:deploy"
         }
       }
     }
