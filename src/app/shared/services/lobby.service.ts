@@ -37,6 +37,14 @@ export class LobbyService {
     this.ws.emit('gameStarted', articles);
   }
 
+  public emitHack(): void {
+    this.ws.emit('isHackerzaum');
+  }
+
+  public hasHackerzaum(): Observable<any> {
+    return this.ws.listen('hasHackerzaum');
+  }
+
   public getArticles(): Observable<any> {
     return this.ws.listen('gameHasStarted');
   }
