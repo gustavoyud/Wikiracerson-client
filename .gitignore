@@ -43,3 +43,4 @@ Thumbs.db
 # Lock
 package-lock.json
 yarn.lock
+.vercel

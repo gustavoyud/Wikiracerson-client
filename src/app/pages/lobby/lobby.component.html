@@ -36,7 +36,7 @@
         [value]="item"
         (click)="searchTheGuys(item.link)"
       >
-        {{ item.label }}
+        <span [innerHTML]="item.label"></span>
       </mat-list-option>
     </mat-selection-list>
   </mat-card-content>
