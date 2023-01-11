@@ -12,10 +12,11 @@ import { BehaviorSubject, EMPTY, filter, finalize, Subject, switchMap, takeUntil
 import { LobbyService } from 'src/app/shared/services/lobby.service';
 import { WikiService } from 'src/app/shared/services/wiki.service';
 
-interface Player {
+export interface Player {
   meuNome?: string;
   id?: number;
   isDonoDaSala?: boolean;
+  history?: any[];
 }
 
 @Component({
@@ -35,7 +36,7 @@ interface Player {
   styleUrls: ['./lobby.component.scss'],
 })
 export class LobbyComponent implements OnInit, OnDestroy {
-  public players$ = this.lobby.getPlayers().pipe();
+  public players$ = this.lobby.getPlayers();
 
   public isDonoDaSala$ = this.lobby.isDonoDaSala();
 
@@ -74,20 +75,25 @@ export class LobbyComponent implements OnInit, OnDestroy {
       this.listenArticles();
       this.listenToGameFinished();
       this.listenToUserHackerzaum();
-      this.saveTheGameIfIsDonoDaSala();
+      this.saveUserInLocalStorage();
     } else {
       this.route.navigate(['auth']);
     }
   }
 
-  private saveTheGameIfIsDonoDaSala(): void {
-    this.isDonoDaSala$
+  private saveUserInLocalStorage(): void {
+    this.players$
       .pipe(
-        tap(() => localStorage.removeItem('players')),
-        switchMap((isDono) => isDono ? this.players$ : EMPTY),
-        filter((players) => !!players.length),
+        tap((players) => {
+          const user = JSON.parse(localStorage.getItem('user'));
+          players.forEach((player) => {
+            if (player.meuNome === user.meuNome) {
+              localStorage.setItem('user', JSON.stringify(player));
+            }
+          })
+        }),
       )
-      .subscribe((players) => localStorage.setItem('players', JSON.stringify(players)));
+      .subscribe();
   }
 
   private listenToUserHackerzaum() {
