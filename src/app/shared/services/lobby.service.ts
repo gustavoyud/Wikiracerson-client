@@ -29,7 +29,7 @@ export class LobbyService {
     return this.ws.listen('newPlayer');
   }
 
-  public isDonoDaSala(): Observable<any> {
+  public isDonoDaSala(): Observable<boolean> {
     return this.ws.listen('isDonoDaSala');
   }
 

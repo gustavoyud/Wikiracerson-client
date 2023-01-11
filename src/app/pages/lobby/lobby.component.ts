@@ -8,7 +8,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { BehaviorSubject, finalize, Subject, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, EMPTY, filter, finalize, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { LobbyService } from 'src/app/shared/services/lobby.service';
 import { WikiService } from 'src/app/shared/services/wiki.service';
 
@@ -35,7 +35,7 @@ interface Player {
   styleUrls: ['./lobby.component.scss'],
 })
 export class LobbyComponent implements OnInit, OnDestroy {
-  public players$ = this.lobby.getPlayers().pipe(tap(console.log));
+  public players$ = this.lobby.getPlayers().pipe();
 
   public isDonoDaSala$ = this.lobby.isDonoDaSala();
 
@@ -74,9 +74,20 @@ export class LobbyComponent implements OnInit, OnDestroy {
       this.listenArticles();
       this.listenToGameFinished();
       this.listenToUserHackerzaum();
+      this.saveTheGameIfIsDonoDaSala();
     } else {
       this.route.navigate(['auth']);
     }
+  }
+
+  private saveTheGameIfIsDonoDaSala(): void {
+    this.isDonoDaSala$
+      .pipe(
+        tap(() => localStorage.removeItem('players')),
+        switchMap((isDono) => isDono ? this.players$ : EMPTY),
+        filter((players) => !!players.length),
+      )
+      .subscribe((players) => localStorage.setItem('players', JSON.stringify(players)));
   }
 
   private listenToUserHackerzaum() {
