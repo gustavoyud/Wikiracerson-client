@@ -4,7 +4,7 @@
   </mat-card-header>
   <mat-card-content>
     <div *ngFor="let player of players$ | async">
-      <p>{{ player.meuNome }} <span *ngIf="player.isDonoDaSala">🥷</span></p>
+      <p>{{ player.meuNome }} <span *ngIf="player.isDonoDaSala">🥷</span><span *ngIf="player.isControlF">🚫</span></p>
       <h5 *ngFor="let history of player.history; first as first">
         <span *ngIf="!first">-></span> {{ history }}
       </h5>
@@ -34,9 +34,10 @@
       <mat-list-option
         *ngFor="let item of listOfArticles$ | async"
         [value]="item"
+        [disabled]="disabled$ | async"
         (click)="searchTheGuys(item.link)"
       >
-        {{ item.label }}
+        <span [innerHTML]="item.label"></span>
       </mat-list-option>
     </mat-selection-list>
   </mat-card-content>

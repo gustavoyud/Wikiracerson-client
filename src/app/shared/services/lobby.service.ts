@@ -1,11 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Player } from 'src/app/pages/lobby/lobby.component';
 import { WebSocketService } from './web-socket.service';
-
-export interface AuthConfig {
-  meuNome: string;
-  id: number;
-}
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +9,7 @@ export interface AuthConfig {
 export class LobbyService {
   constructor(private ws: WebSocketService) {}
 
-  public login(auth: AuthConfig) {
+  public login(auth: Player) {
     this.ws.init('lobby', { auth });
   }
 
@@ -29,12 +25,20 @@ export class LobbyService {
     return this.ws.listen('newPlayer');
   }
 
-  public isDonoDaSala(): Observable<any> {
+  public isDonoDaSala(): Observable<boolean> {
     return this.ws.listen('isDonoDaSala');
   }
 
   public startGame(articles: any): void {
     this.ws.emit('gameStarted', articles);
+  }
+
+  public emitHack(): void {
+    this.ws.emit('isHackerzaum');
+  }
+
+  public hasHackerzaum(): Observable<any> {
+    return this.ws.listen('hasHackerzaum');
   }
 
   public getArticles(): Observable<any> {

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
@@ -8,14 +8,15 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { BehaviorSubject, finalize, Subject, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, EMPTY, filter, finalize, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { LobbyService } from 'src/app/shared/services/lobby.service';
 import { WikiService } from 'src/app/shared/services/wiki.service';
 
-interface Player {
+export interface Player {
   meuNome?: string;
   id?: number;
   isDonoDaSala?: boolean;
+  history?: any[];
 }
 
 @Component({
@@ -35,7 +36,7 @@ interface Player {
   styleUrls: ['./lobby.component.scss'],
 })
 export class LobbyComponent implements OnInit, OnDestroy {
-  public players$ = this.lobby.getPlayers().pipe(tap(console.log));
+  public players$ = this.lobby.getPlayers();
 
   public isDonoDaSala$ = this.lobby.isDonoDaSala();
 
@@ -50,6 +51,10 @@ export class LobbyComponent implements OnInit, OnDestroy {
   public listOfArticles$ = new BehaviorSubject([]);
 
   public loading$ = new BehaviorSubject(false);
+
+  public disabled$ = new BehaviorSubject(false);
+
+  private lastKey = '';
 
   constructor(
     private lobby: LobbyService,
@@ -69,9 +74,43 @@ export class LobbyComponent implements OnInit, OnDestroy {
       this.lobby.emitPlayers();
       this.listenArticles();
       this.listenToGameFinished();
+      this.listenToUserHackerzaum();
+      this.saveUserInLocalStorage();
     } else {
       this.route.navigate(['auth']);
     }
+  }
+
+  private saveUserInLocalStorage(): void {
+    this.players$
+      .pipe(
+        tap((players) => {
+          const user = JSON.parse(localStorage.getItem('user'));
+          players.forEach((player) => {
+            if (player.meuNome === user.meuNome) {
+              localStorage.setItem('user', JSON.stringify(player));
+            }
+          })
+        }),
+      )
+      .subscribe();
+  }
+
+  private listenToUserHackerzaum() {
+    this.lobby
+      .hasHackerzaum()
+      .pipe(takeUntil(this.destroyController$))
+      .subscribe((user) => {
+        if (!this.disabled$.value) {
+          this.snackbar.open(
+            `${user.meuNome.toUpperCase()} É O HACKERZÃO DA RODADA!`,
+            'TOP',
+            {
+              duration: 2000,
+            }
+          );
+        }
+      });
   }
 
   private listenArticles() {
@@ -126,5 +165,27 @@ export class LobbyComponent implements OnInit, OnDestroy {
         }
         this.listOfArticles$.next(body?.links);
       });
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  private listen(event: KeyboardEvent) {
+    if (this.articles$.value?.start?.title) {
+      const COMMAND_KEY = 'MetaLeft';
+      const F_KEY = 'KeyF';
+      const isControl = event.ctrlKey || this.lastKey === COMMAND_KEY;
+
+      if (this.lastKey !== event.code) {
+        this.lastKey = event.code;
+      }
+
+      if (isControl && event.code === F_KEY) {
+        this.lastKey = '';
+        this.disabled$.next(true);
+        this.lobby.emitHack();
+        setTimeout(() => {
+          this.disabled$.next(false);
+        }, 10000);
+      }
+    }
   }
 }
