@@ -22,6 +22,7 @@ jobs:
          - name: Create Release
            id: create_release
            uses: actions/create-release@latest
+           if: ${{ steps.Changelog.outputs.skipped == 'false' }}
            env:
              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
            with:
@@ -29,5 +30,3 @@ jobs:
             release_name: Release ${{ steps.Changelog.outputs.tag }}
             body: |
               ${{ steps.Changelog.outputs.clean_changelog }}
-            draft: false
-            prerelease: false
