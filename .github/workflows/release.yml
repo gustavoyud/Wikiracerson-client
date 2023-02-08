@@ -1,29 +1,27 @@
-name: Release # Workflow name displayed on GitHub 
+name: Release
 
-on: 
-
-  workflow_dispatch: # Trigger manually 
-
-   branches: main # Branch on which the workflow will run 
+on:
+  push:
+    branches:
+    - master
 
 jobs: 
-
    new-release:
       runs-on: ubuntu-latest 
       steps: 
          - uses: actions/checkout@v3 # Checkout our working repository 
          - name: Changelog
-            uses: scottbrenner/generate-changelog-action@master
-            id: Changelog
-            env:
+           id: Changelog
+           uses: scottbrenner/generate-changelog-action@master
+           env:
               REPO: ${{ github.repository }}
-            
-        - name: Create Release
-          id: create_release
-          uses: actions/create-release@latest
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
+
+         - name: Create Release
+           id: create_release
+           uses: actions/create-release@latest
+           env:
+             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           with:
             tag_name: ${{ github.ref }}
             release_name: Release ${{ github.ref }}
             body: |
