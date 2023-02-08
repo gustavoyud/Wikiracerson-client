@@ -1,22 +1,16 @@
 name: Release
-
 on:
   push:
-    branches:
-    - master
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
 
 jobs: 
    new-release:
       runs-on: ubuntu-latest 
       steps:
-         - uses: actions/checkout@v3 # Checkout our working repository 
-         
          # Update version in package.json according to the tag
          - name: Check package version
            uses: technote-space/package-version-check-action@v1
-           
-         - name: Get Current Tag
-           uses: zingimmick/github-action-get-current-tag@1.0.0
          
          - name: Changelog
            id: Changelog
