@@ -10,23 +10,24 @@
       </h5>
     </div>
     <mat-divider
-      *ngIf="(isDonoDaSala$ | async) && !(currentArticle$ | async)"
+      *ngIf="(isDonoDaSala$ | async) && !(gameState.gameIsRunning$ | async)"
     ></mat-divider>
   </mat-card-content>
   <mat-card-actions
     align="end"
-    *ngIf="(isDonoDaSala$ | async) && !(currentArticle$ | async)"
+    *ngIf="(isDonoDaSala$ | async) && !(gameState.gameIsRunning$ | async)"
   >
     <button mat-button color="primary" (click)="start()">Começar o jogo</button>
   </mat-card-actions>
 </mat-card>
 
-<mat-card *ngIf="(articles$ | async)?.start?.title && !(gameHasFinished$ | async)">
+<mat-card *ngIf="(gameState.articles$ | async)?.start?.title && !(gameState.gameIsRunning$ | async)">
+  <button (click)="win()">VENCER</button>
   <mat-card-header>
     <mat-card-subtitle>Você está em: </mat-card-subtitle>
     <mat-card-title>{{ currentArticle$ | async }}</mat-card-title>
     <mat-card-subtitle>
-      Você deve chegar nesse artigo: <b>{{ (articles$ | async)?.end?.title }}</b>
+      Você deve chegar nesse artigo: <b>{{ (gameState.articles$ | async)?.end?.title }}</b>
     </mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>

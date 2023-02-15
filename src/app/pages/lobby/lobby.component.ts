@@ -9,14 +9,18 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { BehaviorSubject, EMPTY, filter, finalize, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { GameStateService } from 'src/app/shared/services/game-state.service';
 import { LobbyService } from 'src/app/shared/services/lobby.service';
 import { WikiService } from 'src/app/shared/services/wiki.service';
 
-export interface Player {
-  meuNome?: string;
-  id?: number;
-  isDonoDaSala?: boolean;
-  history?: any[];
+export interface Article {
+  label: string;
+  link: string;
+}
+
+export interface Articles {
+  pageId: number;
+  links: Article[];
 }
 
 @Component({
@@ -42,13 +46,11 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   public gameHasFinished$ = new BehaviorSubject(false);
 
-  public articles$ = new BehaviorSubject<any>({});
-
   public currentArticle$ = new BehaviorSubject('');
 
   public destroyController$: Subject<any> = new Subject();
 
-  public listOfArticles$ = new BehaviorSubject([]);
+  public listOfArticles$ = new BehaviorSubject<Article[]>([]);
 
   public loading$ = new BehaviorSubject(false);
 
@@ -57,6 +59,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
   private lastKey = '';
 
   constructor(
+    public gameState: GameStateService,
     private lobby: LobbyService,
     private route: Router,
     private wiki: WikiService,
@@ -119,7 +122,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroyController$))
       .subscribe((articles) => {
         this.snackbar.open('O jogo começou! 🎮', '🏃‍♂️', { duration: 2000 });
-        this.articles$.next(articles);
+        this.gameState.articles$.next(articles);
         this.searchTheGuys(articles.start.title);
       });
   }
@@ -160,7 +163,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
         finalize(() => this.loading$.next(false))
       )
       .subscribe(({ body }) => {
-        if (body?.pageId === this.articles$.value.end?.id) {
+        if (body?.pageId === this.gameState.articles$.value.end?.id) {
           this.lobby.hasWinner();
         }
         this.listOfArticles$.next(body?.links);
@@ -169,7 +172,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   private listen(event: KeyboardEvent) {
-    if (this.articles$.value?.start?.title) {
+    if (this.gameState.articles$.value?.start?.title) {
       const COMMAND_KEY = 'MetaLeft';
       const F_KEY = 'KeyF';
       const isControl = event.ctrlKey || this.lastKey === COMMAND_KEY;
@@ -187,5 +190,9 @@ export class LobbyComponent implements OnInit, OnDestroy {
         }, 10000);
       }
     }
+  }
+
+  public win() {
+    this.lobby.hasWinner()
   }
 }

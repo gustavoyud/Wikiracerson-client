@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { Player } from 'src/app/pages/lobby/lobby.component';
+import { Observable, startWith } from 'rxjs';
+import { Player } from './game-state.service';
 import { WebSocketService } from './web-socket.service';
 
 @Injectable({
