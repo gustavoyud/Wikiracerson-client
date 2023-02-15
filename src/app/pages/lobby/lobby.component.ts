@@ -10,6 +10,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { BehaviorSubject, EMPTY, filter, finalize, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { LobbyService } from 'src/app/shared/services/lobby.service';
+import { WebSocketService } from 'src/app/shared/services/web-socket.service';
 import { WikiService } from 'src/app/shared/services/wiki.service';
 
 export interface Player {
@@ -60,7 +61,8 @@ export class LobbyComponent implements OnInit, OnDestroy {
     private lobby: LobbyService,
     private route: Router,
     private wiki: WikiService,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    private ws: WebSocketService,
   ) {}
 
   public ngOnDestroy(): void {
@@ -70,6 +72,9 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     if (localStorage.getItem('user')) {
+      this.ws.connectionReestablished$.subscribe(() => {
+        this.ws.emit('setPlayers', JSON.parse(localStorage.getItem('user') ?? '{}'))
+      })
       this.lobby.login(JSON.parse(localStorage.getItem('user')));
       this.lobby.emitPlayers();
       this.listenArticles();
